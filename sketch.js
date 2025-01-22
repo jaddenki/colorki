@@ -1,74 +1,45 @@
-// p5.js Color Palette Generator
+document.addEventListener('DOMContentLoaded', (event) => {
+    const genButton = document.getElementById('gen');
+    const saveButton = document.getElementById('save');
+    const hexButton = document.getElementById('hex');
+    const colorHarmonySelect = document.getElementById('color-harmony-select');
+    const numColorsSlider = document.getElementById("myRange");
 
-let palette = []; // Array to hold the color palette
-let numColors = 3; // Default number of colors
-let relationship = "analogous"; // Default relationship
-let selectedColorIndex = -1; // Index of selected color
-let originalHue = 0, originalSaturation = 0, originalLightness = 0; // Changed brightness to lightness
-let slidersLocked = false; // Variable to track if sliders are locked
+    genButton.addEventListener('click', generatePalette);
+    saveButton.addEventListener('click', savePalette);
+    hexButton.addEventListener('click', copyHexCode);
+    colorHarmonySelect.addEventListener('change', changeColorHarmony);
+    numColorsSlider.addEventListener('input', adjustNumColors);
+});
+
+function changeColorHarmony() {
+    relationship = document.getElementById('color-harmony-select').value;
+    generatePalette();
+    console.log('Color Harmony changed');
+}
+
+
+
+let palette = []; 
+let numColors = 3; 
+let relationship = "analogous"; 
+let originalHue = 0, originalSaturation = 0, originalLightness = 0; 
+let slidersLocked = false;
 
 // UI elements
-let relationshipSelect, numColorsSlider, randomButton, saveButton, copyHexButton;
-let hueSlider, saturationSlider, lightnessSlider;
-
-let animationProgress = []; // Array to track animation progress for each swatch
-
+let relationshipSelect, randomButton, saveButton, copyHexButton;
+let animationProgress = []; 
 function setup() {
   createCanvas(800, 600);
   colorMode(HSL);
 
-  // Initialize the animation progress array
-  for (let i = 0; i < 6; i++) {
-    animationProgress.push(0);
-  }
-
-  // UI initialization
-  relationshipSelect = createSelect();
-  relationshipSelect.position(20, 20);
-  relationshipSelect.option("none");
-  relationshipSelect.option("analogous");
-  relationshipSelect.option("monochromatic");
-  relationshipSelect.option("triadic");
-  relationshipSelect.option("complementary");
-  relationshipSelect.option("split complementary");
-  relationshipSelect.changed(() => {
-    relationship = relationshipSelect.value();
-    adjustNumColors();
-    generatePalette();
-    slidersLocked = false;
-  });
-
-  relationship = "split complementary";
-  relationshipSelect.value("split complementary");
-
-  createP("Number of Colors: ").position(20, 50);
-  numColorsSlider = createSlider(1, 6, numColors, 1);
-  numColorsSlider.position(150, 70);
-  numColorsSlider.input(() => {
-    numColors = numColorsSlider.value();
-    generatePalette();
-  });
-
-  randomButton = createButton("Generate Palette");
-  randomButton.position(20, 230);
-  randomButton.mousePressed(() => {
-    generatePalette();
-    slidersLocked = false;
-  });
-
-  saveButton = createButton("Save Palette");
-  saveButton.position(150, 230);
-  saveButton.mousePressed(savePalette);
-
-  copyHexButton = createButton("Copy Hex Code");
-  copyHexButton.position(300, 230);
-  copyHexButton.mousePressed(copyHexCode);
+ 
 
   initializeDefaultPalette();
 }
   
   function adjustNumColors() {
-    // Adjust maximum number of colors allowed based on the relationship
+    numColors = document.getElementById("myRange").value;
     switch (relationship) {
       case "monochromatic":
         numColorsSlider.attribute("max", 5);
@@ -95,25 +66,12 @@ function setup() {
   
     // Display palette
     let swatchWidth = width / max(1, palette.length);
-    let paletteYOffset = height / 2 - 90;
+    let paletteYOffset = 0;
     for (let i = 0; i < palette.length; i++) {
       let currentProgress = animationProgress[i];
       let outlineAlpha = map(currentProgress, 0, 30, 0, 255); // Fade effect
   
-      // Draw outline for selected swatch
-      if (i === selectedColorIndex) {
-        animationProgress[i] = min(animationProgress[i] + 1, 30); // Increase animation progress
-      } else {
-        animationProgress[i] = max(animationProgress[i] - 1, 0); // Decrease animation progress
-      }
-  
-      // Draw outline with fading
-      if (currentProgress > 0) {
-        stroke(0, outlineAlpha);
-        strokeWeight(4);
-      } else {
-        noStroke();
-      }
+
       fill(palette[i]);
       rect(i * swatchWidth, paletteYOffset, swatchWidth, 200);
   
@@ -149,8 +107,9 @@ function setup() {
   }
 
 function generatePalette() {
+    relationship = document.getElementById('color-harmony-select').value;
     palette = [];
-    let baseHue = random(360); // Base hue for the palette
+    let baseHue = random(360); 
   
     switch (relationship) {
       case "none":
@@ -174,7 +133,7 @@ function generatePalette() {
         let mono_light = 50;
         let mono_sat = random(20,100);
         for (let i = 0; i < 5; i++) {
-          let lightnessOffset = (i - 1) * 20; // Lightness variation
+          let lightnessOffset = (i - 1) * 20;
           let newLightness = constrain(mono_light + lightnessOffset, 0, 100);
           palette.push(color(baseHue, mono_sat, newLightness));
         }
@@ -183,7 +142,7 @@ function generatePalette() {
         let tri_light = random(50,90);
         let tri_sat = random(tri_light + 10,100);
         for (let i = 0; i < 3; i++) {
-          let hueOffset = i * 120; // 120 degrees apart
+          let hueOffset = i * 120;
           let newHue = (baseHue + hueOffset + 360) % 360;
           palette.push(color(newHue, tri_sat, tri_light));
         }
@@ -203,7 +162,7 @@ function generatePalette() {
         break;
     }
   
-    selectedColorIndex = -1; // Reset selection
+    selectedColorIndex = -1; 
   }
 
 

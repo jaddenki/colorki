@@ -1,8 +1,33 @@
-<head></head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPECTRUM</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
 
 <body>
+    <div id="header">
+        <h1>COLORKI</h1>
+        <p>quick tool to generate and save pleasing color palettes. constraint encourages creativity</p>
+        <hr>
+    </div>
+    <div id="tool-layout">
+        <button id="gen">generate</button>
+        <button id="save">save</button>
+    <select name ="color-harmony" id="color-harmony-select">
+        <option value="none">no color harmony</option>
+        <option value="analogous">analogous</option>
+        <option value="monochromatic">monochromatic</option>
+        <option value="triadic">triadic</option>
+        <option value="complementary">complementary</option>
+        <option value="split complementary">split complementary</option>
+    </select>
+
     <div id="canvasWrapper"></div>
-    
+    </div>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.10.0/p5.min.js"></script>
     <script src="./sketch.js"></script>
