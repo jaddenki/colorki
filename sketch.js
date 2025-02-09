@@ -1,24 +1,20 @@
 document.addEventListener('DOMContentLoaded', (event) => {
-    const genButton = document.getElementById('gen');
-    const saveButton = document.getElementById('save');
-    const hexButton = document.getElementById('hex');
-    const colorHarmonySelect = document.getElementById('color-harmony-select');
-    const numColorsSlider = document.getElementById("myRange");
+  const genButton = document.getElementById('gen');
+  const saveButton = document.getElementById('save');
+  const hexButton = document.getElementById('hex');
+  const colorHarmonySelect = document.getElementById('color-harmony-select');
+  const numColorsSlider = document.getElementById("myRange");
 
-    genButton.addEventListener('click', generatePalette);
-    saveButton.addEventListener('click', savePalette);
-    hexButton.addEventListener('click', copyHexCode);
-    colorHarmonySelect.addEventListener('change', changeColorHarmony);
-    numColorsSlider.addEventListener('input', adjustNumColors);
+  genButton.addEventListener('click', generatePalette);
+  saveButton.addEventListener('click', savePalette);
+  colorHarmonySelect.addEventListener('change', changeColorHarmony);
 });
 
 function changeColorHarmony() {
-    relationship = document.getElementById('color-harmony-select').value;
-    generatePalette();
-    console.log('Color Harmony changed');
+  relationship = document.getElementById('color-harmony-select').value;
+  generatePalette();
+  console.log('Color Harmony changed');
 }
-
-
 
 let palette = []; 
 let numColors = 3; 
@@ -26,167 +22,141 @@ let relationship = "analogous";
 let originalHue = 0, originalSaturation = 0, originalLightness = 0; 
 let slidersLocked = false;
 
-// UI elements
 let relationshipSelect, randomButton, saveButton, copyHexButton;
 let animationProgress = []; 
+
 function setup() {
-  createCanvas(800, 600);
+  let canvas = createCanvas(800, 200);
+  canvas.parent('canvasWrapper'); 
   colorMode(HSL);
-
- 
-
   initializeDefaultPalette();
+  
 }
-  
-  function adjustNumColors() {
-    numColors = document.getElementById("myRange").value;
-    switch (relationship) {
-      case "monochromatic":
-        numColorsSlider.attribute("max", 5);
-        break;
-      case "triadic":
-        numColorsSlider.attribute("max", 3);
-        break;
-      case "complementary":
-        numColorsSlider.attribute("max", 2);
-        break;
-      case "split complementary":
-        numColorsSlider.attribute("max", 3);
-        break;
-      default: // "none" and others
-        numColorsSlider.attribute("max", 6);
-        break;
-    }
-    numColors = constrain(numColorsSlider.value(), 1, numColorsSlider.attribute("max"));
-    numColorsSlider.value(numColors);
-  }
 
-  function draw() {
-    background(240);
-  
-    // Display palette
-    let swatchWidth = width / max(1, palette.length);
-    let paletteYOffset = 0;
-    for (let i = 0; i < palette.length; i++) {
-      let currentProgress = animationProgress[i];
-      let outlineAlpha = map(currentProgress, 0, 30, 0, 255); // Fade effect
-  
 
-      fill(palette[i]);
-      rect(i * swatchWidth, paletteYOffset, swatchWidth, 200);
-  
-      // Reset stroke for text
-      noStroke();
-  
-      // Display color info
-      fill(0);
-      textAlign(CENTER);
-      textSize(16);
-      let h = int(hue(palette[i]));
-      let s = int(saturation(palette[i]));
-      let l = int(lightness(palette[i]));
-      let hexColor = colorToHex(palette[i]);
-      text(`H:${h} S:${s} L:${l}`, i * swatchWidth + swatchWidth / 2, paletteYOffset + 220);
-      text(hexColor, i * swatchWidth + swatchWidth / 2, paletteYOffset + 240);
-    }
+function draw() {
+  background(240);
+  let swatchWidth = width / max(1, palette.length);
+  let paletteYOffset = 0;
+  for (let i = 0; i < palette.length; i++) {
+    fill(palette[i]);
+    rect(i * swatchWidth, paletteYOffset, swatchWidth, 200);
+    noStroke();
+    fill(0);
   }
+}
 
-  function mousePressed() {
-    let swatchWidth = width / max(1, palette.length);
-    for (let i = 0; i < palette.length; i++) {
-      if (mouseX > i * swatchWidth && mouseX < (i + 1) * swatchWidth) {
-        selectedColorIndex = i;
-        originalHue = hue(palette[i]);
-        originalSaturation = saturation(palette[i]);
-        originalLightness = lightness(palette[i]);
-  
-        slidersLocked = false;
-        break;
-      }
-    }
-  }
 
 function generatePalette() {
-    relationship = document.getElementById('color-harmony-select').value;
-    palette = [];
-    let baseHue = random(360); 
-  
-    switch (relationship) {
-      case "none":
-        for (let i = 0; i < numColors; i++) {
-            let h = random(360);
-            let s = random(100);
-            let l = random(100);
-            palette.push(color(h, s, l));
-          }
-        break;
-      case "analogous":
-        let anal_light = random(40,70);
-        let anal_sat = random(anal_light,100);
-        for (let i = 0; i < numColors; i++) {
-          let hueOffset = (i - 1) * 30; 
-          let newHue = (baseHue + hueOffset + 360) % 360;
-          palette.push(color(newHue,anal_sat, anal_light));
+  relationship = document.getElementById('color-harmony-select').value;
+  const hexCodesContainer = document.getElementById('hexCodesContainer'); 
+  const rgbCodesContainer = document.getElementById('rgbCodesContainer');
+  const explanationContainer = document.getElementById('explanationContainer'); 
+  hexCodesContainer.innerHTML = ''; 
+  rgbCodesContainer.innerHTML = ''; 
+  palette = [];
+  let baseHue = random(360); 
+
+  switch (relationship) {
+    case "none":
+      explanationContainer.innerHTML = `<p>i generated 3 colors that look good together by simply using the <code>hsl</code> colorspace. even though these colors are all randomly generated with no relationship, the colors still go well together beacuse of the inherent properties of the <code>hsl</code> color model & human perception. read more about it <a href="https://forum.freecodecamp.org/t/the-basic-principles-of-web-design-a-guide-to-using-hsl-what-is-it-and-is-it-better-than-rgb/326663" target="blank">here</a>!</p>`;
+      for (let i = 0; i < numColors; i++) {
+          let h = random(360);
+          let s = random(100);
+          let l = random(100);
+          let col = color(h, s, l);
+          palette.push(col);
+          hexCodesContainer.innerHTML += `<p>${colorToHex(col)}</p>`;
+          rgbCodesContainer.innerHTML += `<p>${colorToRgb(col)}</p>`;
         }
-        break;
-      case "monochromatic":
-        let mono_light = 50;
-        let mono_sat = random(20,100);
-        for (let i = 0; i < 5; i++) {
-          let lightnessOffset = (i - 1) * 20;
-          let newLightness = constrain(mono_light + lightnessOffset, 0, 100);
-          palette.push(color(baseHue, mono_sat, newLightness));
-        }
-        break;
-      case "triadic":
-        let tri_light = random(50,90);
-        let tri_sat = random(tri_light + 10,100);
-        for (let i = 0; i < 3; i++) {
-          let hueOffset = i * 120;
-          let newHue = (baseHue + hueOffset + 360) % 360;
-          palette.push(color(newHue, tri_sat, tri_light));
-        }
-        break;
-      case "complementary":
-        let comp_light = random(45, 70);
-        let comp_sat = random(comp_light + 20,100);
-        palette.push(color(baseHue, comp_sat, comp_light));
-        palette.push(color((baseHue + 180) % 360, comp_sat, comp_light));
-        break;
-      case "split complementary":
-        let scomp_light = random(45, 70);
-        let scomp_sat = random(scomp_light + 20,100);
-        palette.push(color(baseHue, scomp_sat, scomp_light));
-        palette.push(color((baseHue + 150) % 360, scomp_sat, scomp_light));
-        palette.push(color((baseHue + 210) % 360, scomp_sat, scomp_light));
-        break;
-    }
-  
-    selectedColorIndex = -1; 
+      break;
+    case "analogous":
+      explanationContainer.innerHTML = `<p><code>analogous colors</code> are colors that are next to each other on the color wheel. these are generated by picking a base hue and then selecting colors at intervals of <code>30</code> degrees on the color wheel.</p>`;
+      let anal_light = random(40,70);
+      let anal_sat = random(anal_light,100);
+      for (let i = 0; i < numColors; i++) {
+        let hueOffset = (i - 1) * 30; 
+        let newHue = (baseHue + hueOffset + 360) % 360;
+        let col = color(newHue,anal_sat, anal_light);
+        palette.push(col);
+        hexCodesContainer.innerHTML += `<p>${colorToHex(col)}</p>`;
+        rgbCodesContainer.innerHTML += `<p>${colorToRgb(col)}</p>`;
+      }
+      break;
+    case "monochromatic":
+      explanationContainer.innerHTML = `<p><code>monochromatic colors</code> are all the colors (tints, tones, and shades) of a single hue. i'm doing this by getting a random base hue & varying the lightness by <code>+-20%</code></p>`;
+      let mono_light = 50;
+      let mono_sat = random(20,100);
+      for (let i = 0; i < 3; i++) {
+        let lightnessOffset = (i - 1) * 20;
+        let newLightness = constrain(mono_light + lightnessOffset, 0, 100);
+        let col = color(baseHue, mono_sat, newLightness);
+        palette.push(col);
+        hexCodesContainer.innerHTML += `<p>${colorToHex(col)}</p>`;
+        rgbCodesContainer.innerHTML += `<p>${colorToRgb(col)}</p>`;
+      }
+      break;
+    case "triadic":
+      explanationContainer.innerHTML = `<p><code>triadic colors</code> are evenly spaced around the color wheel. these are generated by picking a base hue and then selecting colors at intervals of <code>120</code> degrees on the color wheel.</p>`;
+      let tri_light = random(50,90);
+      let tri_sat = random(tri_light + 10,100);
+      for (let i = 0; i < 3; i++) {
+        let hueOffset = i * 120;
+        let newHue = (baseHue + hueOffset + 360) % 360;
+        let col = color(newHue, tri_sat, tri_light);
+        palette.push(col);
+        hexCodesContainer.innerHTML += `<p>${colorToHex(col)}</p>`;
+        rgbCodesContainer.innerHTML += `<p>${colorToRgb(col)}</p>`;
+      }
+      break;
+    case "complementary":
+      explanationContainer.innerHTML = `<p><code>complementary colors</code> are opposite of each other on the color wheel. these are made by picking a base hue and then selecting the color <code>180</code> degrees opposite on the color wheel.</p>`;
+      let comp_light = random(45, 70);
+      let comp_sat = random(comp_light + 20,100);
+      let col1 = color(baseHue, comp_sat, comp_light);
+      let col2 = color((baseHue + 180) % 360, comp_sat, comp_light);
+      palette.push(col1);
+      palette.push(col2);
+      hexCodesContainer.innerHTML += `<p>${colorToHex(col1)}</p>`;
+      rgbCodesContainer.innerHTML += `<p>${colorToRgb(col1)}</p>`;
+      hexCodesContainer.innerHTML += `<p>${colorToHex(col2)}</p>`;
+      rgbCodesContainer.innerHTML += `<p>${colorToRgb(col2)}</p>`;
+      break;
+    case "split complementary":
+      explanationContainer.innerHTML = `<p><code>split complementary</code> colors are a variation of the complementary color scheme. this is created by picking a base color & using the two colors adjacent to its complement. since the complement is <code>180</code> degrees from the base, the two other colors chosen are <code>150</code> and <code>210</code> degrees away from the base</p>`;
+      let scomp_light = random(45, 70);
+      let scomp_sat = random(scomp_light + 20,100);
+      let col3 = color(baseHue, scomp_sat, scomp_light);
+      let col4 = color((baseHue + 150) % 360, scomp_sat, scomp_light);
+      let col5 = color((baseHue + 210) % 360, scomp_sat, scomp_light);
+      palette.push(col3);
+      palette.push(col4);
+      palette.push(col5);
+      hexCodesContainer.innerHTML += `<p>${colorToHex(col3)}</p>`;
+      rgbCodesContainer.innerHTML += `<p>${colorToRgb(col3)}</p>`;
+      hexCodesContainer.innerHTML += `<p>${colorToHex(col4)}</p>`;
+      rgbCodesContainer.innerHTML += `<p>${colorToRgb(col4)}</p>`;
+      hexCodesContainer.innerHTML += `<p>${colorToHex(col5)}</p>`;
+      rgbCodesContainer.innerHTML += `<p>${colorToRgb(col5)}</p>`;
+      break;
   }
 
+  selectedColorIndex = -1; 
+}
 
 function savePalette() {
-    let img = createGraphics(width, 200);
-    let swatchWidth = width / numColors;
-  
-    for (let i = 0; i < palette.length; i++) {
-      img.fill(palette[i]);
-      img.noStroke();
-      img.rect(i * swatchWidth, 0, swatchWidth, 200);
-    }
-  
-    save(img, "palette.png");
+  let img = createGraphics(width, 200);
+  let swatchWidth = width / numColors;
+
+  for (let i = 0; i < palette.length; i++) {
+    img.fill(palette[i]);
+    img.noStroke();
+    img.rect(i * swatchWidth, 0, swatchWidth, 200);
+  }
+
+  save(img, "palette.png");
 }
 
-function copyHexCode() {
-    if (selectedColorIndex >= 0) {
-        let hexColor = colorToHex(palette[selectedColorIndex]);
-        navigator.clipboard.writeText(hexColor).then(() => {
-          alert("Hex code copied: " + hexColor);
-        });
-      }
-}
 
 function colorToHex(c) {
   let r = red(c);
@@ -195,6 +165,17 @@ function colorToHex(c) {
   return '#' + hex(r, 2) + hex(g, 2) + hex(b, 2);
 }
 
+function colorToRgb(c) {
+  let r = int(red(c));
+  let g = int(green(c));
+  let b = int(blue(c));
+  return `rgb(${padZero(r)}, ${padZero(g)}, ${padZero(b)})`;
+}
+
+function padZero(num) {
+  return num.toString().padStart(3, '0');
+}
+
 function initializeDefaultPalette() {
-  generatePalette(); // Generate an initial palette
+  generatePalette(); 
 }
