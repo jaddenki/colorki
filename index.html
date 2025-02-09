@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>COLORKI</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/x-icon" href="../img/favi/favicon.ico">
 
@@ -17,21 +18,36 @@
         <hr>
     </div>
     <div id="tool-layout">
+        <div id="controls">
         <button id="gen">generate</button>
         <button id="save">save</button>
-    <select name ="color-harmony" id="color-harmony-select">
-        <option value="none">no color harmony</option>
-        <option value="analogous">analogous</option>
-        <option value="monochromatic">monochromatic</option>
-        <option value="triadic">triadic</option>
-        <option value="complementary">complementary</option>
-        <option value="split complementary">split complementary</option>
-    </select>
-
-    <div id="canvasWrapper"></div>
+        <select name="color-harmony" id="color-harmony-select">
+            <option value="none">no color harmony</option>
+            <option value="analogous">analogous</option>
+            <option value="monochromatic">monochromatic</option>
+            <option value="triadic">triadic</option>
+            <option value="complementary">complementary</option>
+            <option value="split complementary">split complementary</option>
+        </select>
+        <button id="toggle-dark-mode">lights</button>
+     </div>
+        <div id="hexCodesContainer"></div> 
+        <div id="rgbCodesContainer"></div> 
+        <div id="canvasWrapper"></div>
+        <div id="explanationContainer"></div> 
     </div>
+
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.10.0/p5.min.js"></script>
     <script src="./sketch.js"></script>
-
+    <script>
+        document.getElementById('toggle-dark-mode').addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+        });
+    </script>
+    <footer>
+        <p>created by <a href="https://jadden.xyz" target="blank" style="color:#ff0000;">jadden</a> because she likes <a href="https://sanzo-wada.dmbk.io" target="blank" style="color:#ff0000;">colors</a>.</p>
+    </footer>
 </body>
+
+</html>
